@@ -1,0 +1,43 @@
+name: Atualizar Galaga de contribuicoes
+
+on:
+  schedule:
+    # 09:17 em Fortaleza (12:17 UTC)
+    - cron: '17 12 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'README.md'
+      - '.github/workflows/galaga.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: galaga-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  galaga:
+    name: Gerar e publicar o GIF de contribuicoes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fazer checkout do repositorio
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Preparar diretorio de saida
+        run: mkdir -p assets
+
+      - name: Gerar jogo estilo Galaga
+        uses: czl9707/gh-space-shooter@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          username: Edsmonteiro
+          output-path: assets/galaga-contributions.gif
+          strategy: random
+          fps: '25'
+          no-amend: 'true'
+          commit-message: 'chore: atualizar GIF Galaga [skip ci]'
